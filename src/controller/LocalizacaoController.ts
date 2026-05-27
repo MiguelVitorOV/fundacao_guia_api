@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { ResponseBuilder } from "../ResponseBuilder";
 import { LocalizacaoBusiness } from "../business/LocalizacaoBusiness";
-import { localizacaoAPIretorno } from "../types/apiRetornoTipos";
+import {
+  localizacaoAPIretorno,
+  overviewAPIretorno,
+} from "../types/apiRetornoTipos";
 import { catchErros } from "../types/entidades";
 
 export class LocalizacaoController {
@@ -47,6 +50,25 @@ export class LocalizacaoController {
           responseBuilder.STATUS_CODE_SERVER_ERROR,
         );
 
+        responseBuilder.adicionarMensagem(err.sqlMessage || err.message);
+        responseBuilder.construir(res);
+      }
+    }
+  };
+
+  buscarOverview = async (_req: Request, res: Response) => {
+    const responseBuilder = new ResponseBuilder<overviewAPIretorno>();
+
+    try {
+      await this.localizacaoBusiness.obterOverview(responseBuilder);
+      responseBuilder.construir(res);
+    } catch (err: any) {
+      if (err.message === catchErros.CLIENTE) {
+        responseBuilder.construir(res);
+      } else {
+        responseBuilder.adicionarCodigoStatus(
+          responseBuilder.STATUS_CODE_SERVER_ERROR,
+        );
         responseBuilder.adicionarMensagem(err.sqlMessage || err.message);
         responseBuilder.construir(res);
       }

@@ -97,4 +97,31 @@ export class LocalizacaoData {
       throw new Error(err);
     }
   };
+
+  // ---- Overview ----
+
+  buscarTodosBlocos = async (): Promise<bloco[]> => {
+    try {
+      return await connection().select("*").from("blocos");
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  };
+
+  buscarTodosSetores = async (): Promise<setor[]> => {
+    try {
+      return await connection().select("*").from("local");
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  };
+
+  buscarTodosExames = async (): Promise<exame[]> => {
+    try {
+      return await connection().select("*").from("exames");
+    } catch (err: any) {
+      throw new Error(err);
+    }
+  };
 }
+

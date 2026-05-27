@@ -1,7 +1,12 @@
 import { ResponseBuilder } from "../ResponseBuilder";
 import { LocalizacaoData } from "../data/LocalizacaoData";
 import { bloco, setor, exame, catchErros } from "../types/entidades";
-import { localizacaoAPIretorno } from "../types/apiRetornoTipos";
+import {
+  localizacaoAPIretorno,
+  overviewAPIretorno,
+  overviewBloco,
+  overviewSetor,
+} from "../types/apiRetornoTipos";
 
 export class LocalizacaoBusiness {
   private localizacaoData = new LocalizacaoData();
@@ -282,4 +287,57 @@ export class LocalizacaoBusiness {
       throw new Error(err.message);
     }
   };
+
+  obterOverview = async (
+    responseBuilder: ResponseBuilder<overviewAPIretorno>,
+  ) => {
+    try {
+      const [blocos, setores, exames] = await Promise.all([
+        this.localizacaoData.buscarTodosBlocos(),
+        this.localizacaoData.buscarTodosSetores(),
+        this.localizacaoData.buscarTodosExames(),
+      ]);
+
+      if (!blocos || blocos.length === 0) {
+        responseBuilder.adicionarCodigoStatus(
+          responseBuilder.STATUS_CODE_VAZIO,
+        );
+        responseBuilder.adicionarMensagem("Nenhum bloco encontrado.");
+        throw new Error(catchErros.CLIENTE);
+      }
+
+      // Agrupa exames por local_id (setor)
+      const examesPorSetor = new Map<number, exame[]>();
+      for (const exame of exames) {
+        const lista = examesPorSetor.get(exame.local_id) || [];
+        lista.push(exame);
+        examesPorSetor.set(exame.local_id, lista);
+      }
+
+      // Agrupa setores por bloco_id e anexa exames
+      const setoresPorBloco = new Map<number, overviewSetor[]>();
+      for (const setor of setores) {
+        const setorComExames: overviewSetor = {
+          ...setor,
+          exames: examesPorSetor.get(setor.id) || [],
+        };
+
+        const lista = setoresPorBloco.get(setor.bloco_id) || [];
+        lista.push(setorComExames);
+        setoresPorBloco.set(setor.bloco_id, lista);
+      }
+
+      // Monta a árvore final
+      const resultado: overviewBloco[] = blocos.map((bloco) => ({
+        ...bloco,
+        setores: setoresPorBloco.get(bloco.id) || [],
+      }));
+
+      responseBuilder.adicionarCodigoStatus(responseBuilder.STATUS_CODE_OK);
+      responseBuilder.adicionarBody({ blocos: resultado });
+    } catch (err: any) {
+      throw new Error(err.message);
+    }
+  };
 }
+

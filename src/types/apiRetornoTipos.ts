@@ -46,3 +46,16 @@ export type eventosAPIretorno = {
   eventos?: evento[];
 };
 
+// Overview: estrutura aninhada bloco -> setores -> exames
+export type overviewSetor = setor & {
+  exames: exame[];
+};
+
+export type overviewBloco = bloco & {
+  setores: overviewSetor[];
+};
+
+export type overviewAPIretorno = {
+  blocos: overviewBloco[];
+};
+

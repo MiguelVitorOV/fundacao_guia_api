@@ -7,3 +7,8 @@ localizacaoRouter.get(
   "/",
   localizacaoController.buscarLocalizacaoPorParametros,
 );
+
+localizacaoRouter.get(
+  "/overview",
+  localizacaoController.buscarOverview,
+);

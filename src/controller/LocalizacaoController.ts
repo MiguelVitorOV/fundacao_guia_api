@@ -4,6 +4,7 @@ import { LocalizacaoBusiness } from "../business/LocalizacaoBusiness";
 import {
   localizacaoAPIretorno,
   overviewAPIretorno,
+  examesAPIretorno,
 } from "../types/apiRetornoTipos";
 import { catchErros } from "../types/entidades";
 
@@ -61,6 +62,25 @@ export class LocalizacaoController {
 
     try {
       await this.localizacaoBusiness.obterOverview(responseBuilder);
+      responseBuilder.construir(res);
+    } catch (err: any) {
+      if (err.message === catchErros.CLIENTE) {
+        responseBuilder.construir(res);
+      } else {
+        responseBuilder.adicionarCodigoStatus(
+          responseBuilder.STATUS_CODE_SERVER_ERROR,
+        );
+        responseBuilder.adicionarMensagem(err.sqlMessage || err.message);
+        responseBuilder.construir(res);
+      }
+    }
+  };
+
+  buscarTodosExames = async (_req: Request, res: Response) => {
+    const responseBuilder = new ResponseBuilder<examesAPIretorno>();
+
+    try {
+      await this.localizacaoBusiness.obterTodosExames(responseBuilder);
       responseBuilder.construir(res);
     } catch (err: any) {
       if (err.message === catchErros.CLIENTE) {

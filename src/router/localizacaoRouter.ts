@@ -12,3 +12,9 @@ localizacaoRouter.get(
   "/overview",
   localizacaoController.buscarOverview,
 );
+
+localizacaoRouter.get(
+  "/exames",
+  localizacaoController.buscarTodosExames,
+);
+

@@ -59,3 +59,8 @@ export type overviewAPIretorno = {
   blocos: overviewBloco[];
 };
 
+export type examesAPIretorno = {
+  exames: exame[];
+};
+
+

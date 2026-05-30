@@ -18,3 +18,8 @@ localizacaoRouter.get(
   localizacaoController.buscarTodosExames,
 );
 
+localizacaoRouter.get(
+  "/blocos",
+  localizacaoController.buscarTodosBlocos,
+);
+

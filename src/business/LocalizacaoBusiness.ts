@@ -7,6 +7,7 @@ import {
   overviewBloco,
   overviewSetor,
   examesAPIretorno,
+  blocosAPIretorno,
 } from "../types/apiRetornoTipos";
 
 export class LocalizacaoBusiness {
@@ -357,6 +358,27 @@ export class LocalizacaoBusiness {
 
       responseBuilder.adicionarCodigoStatus(responseBuilder.STATUS_CODE_OK);
       responseBuilder.adicionarBody({ exames });
+    } catch (err: any) {
+      throw new Error(err.message);
+    }
+  };
+
+  obterTodosBlocos = async (
+    responseBuilder: ResponseBuilder<blocosAPIretorno>,
+  ) => {
+    try {
+      const blocos = await this.localizacaoData.buscarTodosBlocos();
+
+      if (!blocos || blocos.length === 0) {
+        responseBuilder.adicionarCodigoStatus(
+          responseBuilder.STATUS_CODE_VAZIO,
+        );
+        responseBuilder.adicionarMensagem("Nenhum bloco encontrado.");
+        throw new Error(catchErros.CLIENTE);
+      }
+
+      responseBuilder.adicionarCodigoStatus(responseBuilder.STATUS_CODE_OK);
+      responseBuilder.adicionarBody({ blocos });
     } catch (err: any) {
       throw new Error(err.message);
     }

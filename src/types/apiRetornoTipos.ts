@@ -63,4 +63,8 @@ export type examesAPIretorno = {
   exames: exame[];
 };
 
+export type blocosAPIretorno = {
+  blocos: bloco[];
+};
+
 
